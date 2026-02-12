@@ -99,6 +99,8 @@ function App() {
   };
 
   const handleResume = () => {
+      if (!questions || questions.length === 0) return;
+
       // Resume logic will be refined
       if (history && history.completed) {
           setCurrentStep(6);

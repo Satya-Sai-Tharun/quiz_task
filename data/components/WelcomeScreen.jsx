@@ -20,13 +20,18 @@ const WelcomeScreen = ({ onStart, history, onResume, onFileSelect, hasQuestions 
                         <p>Welcome back, <strong>{history.username}</strong>!</p>
                         <div className="space"></div>
                         {history.completed ? (
-                             <button onClick={onResume}>
+                             <button onClick={onResume} disabled={!hasQuestions}>
                                  View Results
                              </button>
                         ) : (
-                            <button onClick={onResume}>
+                            <button onClick={onResume} disabled={!hasQuestions}>
                                 Resume Quiz
                             </button>
+                        )}
+                        {!hasQuestions && (
+                            <p className="error-text" style={{ marginTop: '10px' }}>
+                                <small>Questions missing. Please import to resume.</small>
+                            </p>
                         )}
                         <div className="space"></div>
                         <p>
