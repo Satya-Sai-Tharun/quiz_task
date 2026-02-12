@@ -13,11 +13,16 @@ export const loadQuestionsFromCSV = async () => {
   return rows.map((row) => {
     const options = [];
 
-    if (row.Option_A) options.push({ id: "a", text: row.Option_A });
-    if (row.Option_B) options.push({ id: "b", text: row.Option_B });
-    if (row.Option_C) options.push({ id: "c", text: row.Option_C });
-    if (row.Option_D) options.push({ id: "d", text: row.Option_D });
-    if (row.Option_E) options.push({ id: "e", text: row.Option_E });
+    if (row.Question_Type === 'toggle') {
+      if (row.Option_A) options.push({ id: String(row.Option_A).toLowerCase(), text: row.Option_A });
+      if (row.Option_B) options.push({ id: String(row.Option_B).toLowerCase(), text: row.Option_B });
+    } else {
+      if (row.Option_A) options.push({ id: "a", text: row.Option_A });
+      if (row.Option_B) options.push({ id: "b", text: row.Option_B });
+      if (row.Option_C) options.push({ id: "c", text: row.Option_C });
+      if (row.Option_D) options.push({ id: "d", text: row.Option_D });
+      if (row.Option_E) options.push({ id: "e", text: row.Option_E });
+    }
 
     let correctAnswer = row.Correct_Answer_1;
 

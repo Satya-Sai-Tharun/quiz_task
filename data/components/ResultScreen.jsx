@@ -4,21 +4,31 @@ const ResultScreen = ({ username, answers, questions, onRestart }) => {
     const results = useMemo(() => {
         let correct = 0;
         let wrong = 0;
-        
+        const wrongList = [];
+
+        const formatAnswer = (q, ans) => {
+            if (ans == null) return '';
+            if (Array.isArray(ans)) {
+                return ans.map(a => (q.options.find(o => o.id === a) || { text: a }).text).join(', ');
+            }
+            // single value - try to map to option text
+            const opt = q.options.find(o => o.id === ans);
+            if (opt) return opt.text;
+            return String(ans);
+        };
+
         questions.forEach(q => {
             const userAnswer = answers[q.id];
-            
             let isCorrect = false;
+
             if (Array.isArray(q.correctAnswer)) {
-                // For checkboxes/arrays, we need to check if arrays match content-wise
                 if (Array.isArray(userAnswer) && 
                     userAnswer.length === q.correctAnswer.length && 
                     userAnswer.every(val => q.correctAnswer.includes(val))) {
                     isCorrect = true;
                 }
-            } else if (q.id === 5) {
-                // Color hex check - case insensitive
-                if (userAnswer && userAnswer.toLowerCase() === q.correctAnswer.toLowerCase()) {
+            } else if (q.type === 'color') {
+                if (userAnswer && typeof userAnswer === 'string' && q.correctAnswer && userAnswer.toLowerCase() === q.correctAnswer.toLowerCase()) {
                     isCorrect = true;
                 }
             } else {
@@ -28,11 +38,19 @@ const ResultScreen = ({ username, answers, questions, onRestart }) => {
             }
 
             if (isCorrect) correct++;
-            else wrong++;
+            else {
+                wrong++;
+                wrongList.push({
+                    id: q.id,
+                    text: q.text,
+                    user: formatAnswer(q, userAnswer),
+                    correct: Array.isArray(q.correctAnswer) ? q.correctAnswer.map(a => (q.options.find(o => o.id === a) || { text: a }).text).join(', ') : (q.options.find(o => o.id === q.correctAnswer)?.text || q.correctAnswer)
+                });
+            }
         });
 
         const percentage = Math.round((correct / questions.length) * 100);
-        return { correct, wrong, percentage };
+        return { correct, wrong, percentage, wrongList };
     }, [answers, questions]);
 
     return (
@@ -66,6 +84,21 @@ const ResultScreen = ({ username, answers, questions, onRestart }) => {
                     </div>
                 </div>
             </div>
+{/* 
+            {results.wrongList && results.wrongList.length > 0 && (
+                <div style={{ maxWidth: '700px', margin: '20px auto', textAlign: 'left' }}>
+                    <h3>Review Wrong Answers</h3>
+                    <ul>
+                        {results.wrongList.map(w => (
+                            <li key={w.id} style={{ marginBottom: '12px' }}>
+                                <div style={{ fontWeight: 'bold' }}>{w.text}</div>
+                                <div>Your answer: <span style={{ color: '#d9534f' }}>{w.user || '(no answer)'}</span></div>
+                                <div>Correct answer: <span style={{ color: 'green' }}>{w.correct}</span></div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )} */}
 
             <button 
                 onClick={onRestart}
