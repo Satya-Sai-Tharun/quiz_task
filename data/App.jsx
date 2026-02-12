@@ -88,15 +88,17 @@ function App() {
   }
 
   if (loading) {
-    return <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>Loading questions…</div>;
+    return <div className="loader center-align"></div>;
   }
 
   if (loadError) {
-    return <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem', color: 'red' }}>Failed to load questions: {loadError}</div>;
+    return <div className="banner error">{loadError}</div>;
   }
 
   return (
-    <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
+    <>
+      <div className="background-overlay"></div>
+      <main className="responsive">
       {currentStep === 0 && (
         <WelcomeScreen 
             onStart={handleStart} 
@@ -120,7 +122,8 @@ function App() {
             onRestart={handleRestart}
         />
       )}
-    </div>
+      </main>
+    </>
   );
 }
 

@@ -2,29 +2,17 @@ import React from 'react';
 
 const RadioGroup = ({ options, value, onChange }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className="field">
             {options.map((option) => (
-                <label 
-                    key={option.id} 
-                    style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        cursor: 'pointer',
-                        padding: '10px',
-                        border: '1px solid #eee',
-                        borderRadius: '4px',
-                        backgroundColor: value === option.id ? '#f0f8ff' : 'white'
-                    }}
-                >
+                <label key={option.id} className="radio">
                     <input
                         type="radio"
                         name="radio-group"
                         value={option.id}
                         checked={value === option.id}
                         onChange={() => onChange(option.id)}
-                        style={{ marginRight: '10px' }}
                     />
-                    {option.text}
+                    <span>{option.text}</span>
                 </label>
             ))}
         </div>

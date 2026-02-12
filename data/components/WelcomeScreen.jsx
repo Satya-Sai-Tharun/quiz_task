@@ -11,55 +11,47 @@ const WelcomeScreen = ({ onStart, history, onResume }) => {
     };
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Quiz Application</h1>
-            
-            {history ? (
-                <div>
-                    <h2>Welcome back, {history.username}!</h2>
-                    {history.completed ? (
-                         <button 
-                         onClick={onResume}
-                         style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
-                     >
-                         View Results
-                     </button>
-                    ) : (
-                        <button 
-                            onClick={onResume}
-                            style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
-                        >
-                            Resume Quiz
+        <article className="center-align">
+            <div>
+                <h5>Quiz Application</h5>
+                
+                {history ? (
+                    <div>
+                        <p>Welcome back, <strong>{history.username}</strong>!</p>
+                        <div className="space"></div>
+                        {history.completed ? (
+                             <button onClick={onResume}>
+                                 View Results
+                             </button>
+                        ) : (
+                            <button onClick={onResume}>
+                                Resume Quiz
+                            </button>
+                        )}
+                        <div className="space"></div>
+                        <p>
+                            <small>Not {history.username}? <a href="#" onClick={() => localStorage.removeItem('quizAppUser') || window.location.reload()}>Restart</a></small>
+                        </p>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
+                        <div className="field label border">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                            <label>Username</label>
+                        </div>
+                        <div className="space"></div>
+                        <button type="submit" className="responsive">
+                            Start
                         </button>
-                    )}
-                     <div style={{marginTop: '20px'}}>
-                        <small>Not {history.username}? <a href="#" onClick={() => localStorage.removeItem('quizAppUser') || window.location.reload()}>Restart</a></small>
-                    </div>
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '20px' }}>
-                        <label style={{ display: 'block', marginBottom: '10px' }}>
-                            Enter your username to start:
-                        </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Username"
-                            style={{ padding: '10px', fontSize: '16px', width: '200px' }}
-                            required
-                        />
-                    </div>
-                    <button 
-                        type="submit" 
-                        style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
-                    >
-                        Start
-                    </button>
-                </form>
-            )}
-        </div>
+                    </form>
+                )}
+            </div>
+        </article>
     );
 };
 

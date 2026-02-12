@@ -42,25 +42,28 @@ const QuestionScreen = ({ question, onAnswer, currentStep, totalSteps }) => {
             case 'text':
                 // Creative Q4
                 return (
-                     <input 
-                        type="text" 
-                        value={answer || ''} 
-                        onChange={(e) => setAnswer(e.target.value)}
-                        placeholder={question.placeholder}
-                        style={{ padding: '10px', width: '100%', maxWidth: '300px' }}
-                     />
+                     <div className="field label border">
+                         <input 
+                            type="text" 
+                            value={answer || ''} 
+                            onChange={(e) => setAnswer(e.target.value)}
+                         />
+                         <label>{question.placeholder || 'Answer here'}</label>
+                     </div>
                 );
             case 'color':
-                // Creative Q5
                 return (
-                    <div>
-                        <input 
-                            type="color" 
-                            value={answer || '#000000'}
-                            onChange={(e) => setAnswer(e.target.value)}
-                            style={{ height: '50px', width: '100px', cursor: 'pointer' }}
-                        />
-                        <p>{answer || 'Select a color'}</p>
+                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+                         <label className="bold">Select a color</label>
+                         <div style={{width: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px'}}>
+                            <input 
+                                type="color" 
+                                value={answer || '#000000'}
+                                onChange={(e) => setAnswer(e.target.value)}
+                            />
+                            <label className="bold">Pick Color</label>
+                         </div>
+                        <span className="chip">{answer || '#000000'}</span>
                     </div>
                 )
             default:
@@ -69,36 +72,34 @@ const QuestionScreen = ({ question, onAnswer, currentStep, totalSteps }) => {
     };
 
     return (
-        <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-            <div style={{ marginBottom: '10px', color: '#666' }}>
-                Question {currentStep} of {totalSteps}
+        <article className="center-align" style={{maxWidth: '600px', margin: '0 auto'}}>
+            <div>
+                <div className="row">
+                    <div className="max">
+                        <h6 className="small-text">Question {currentStep} of {totalSteps}</h6>
+                    </div>
+                </div>
+                
+                <h5>{question.text}</h5>
+                
+                {question.description && <p><i>{question.description}</i></p>}
+
+                <div className="space"></div>
+                <div className="left-align">
+                    {renderInput()}
+                </div>
+
+                <div className="space"></div>
+
+                {error && <div className="banner error">{error}</div>}
+
+                <div className="right-align">
+                    <button onClick={handleNext}>
+                        {currentStep === totalSteps ? 'Finish' : 'Next'}
+                    </button>
+                </div>
             </div>
-            
-            <h2 style={{ marginBottom: '20px' }}>{question.text}</h2>
-            
-            {question.description && <p style={{fontStyle: 'italic', marginBottom: '1rem'}}>{question.description}</p>}
-
-            <div style={{ marginBottom: '30px' }}>
-                {renderInput()}
-            </div>
-
-            {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
-
-            <button 
-                onClick={handleNext}
-                style={{ 
-                    padding: '10px 20px', 
-                    fontSize: '16px', 
-                    backgroundColor: '#007bff', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                }}
-            >
-                {currentStep === totalSteps ? 'Finish' : 'Next'}
-            </button>
-        </div>
+        </article>
     );
 };
 
