@@ -51,6 +51,7 @@ function App() {
       // Resume logic will be refined
       if (history && history.completed) {
           setCurrentStep(6);
+          setAnswers(history.answers); // Restore answers for result screen
       } else if (history && history.answers) {
           // If in progress, find first unanswered question? Or just resume last saved step?
           // For simplicity and robustness, let's resume based on answer count.

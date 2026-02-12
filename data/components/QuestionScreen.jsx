@@ -72,7 +72,7 @@ const QuestionScreen = ({ question, onAnswer, currentStep, totalSteps }) => {
     };
 
     return (
-        <article className="center-align" style={{maxWidth: '600px', margin: '0 auto'}}>
+        <article className="center-align">
             <div>
                 <div className="row">
                     <div className="max">

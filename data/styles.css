@@ -30,7 +30,7 @@ body {
   z-index: 1; 
 }
 
-main.responsive, article {
+article {
     background-color: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
@@ -40,6 +40,16 @@ main.responsive, article {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #000000 !important;
+    max-width: 600px;
+    width: 90%;
+}
+
+main.responsive {
+    background-color: transparent !important; 
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 1rem;
 }
 
 input[type="color"] {

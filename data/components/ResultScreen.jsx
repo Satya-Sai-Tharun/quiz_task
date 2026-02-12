@@ -62,7 +62,7 @@ const ResultScreen = ({ username, answers, questions, onRestart }) => {
                 </p>
                 <div className="space"></div>
 
-                <div className="padding surface-container primary-border round small-width center-align" style={{ margin: '0 auto' }}>
+                <div className="center-align" style={{ margin: '0 auto' }}>
                     <h1 className={results.percentage >= 50 ? 'green-text' : 'orange-text'}>
                         {results.percentage}%
                     </h1>
