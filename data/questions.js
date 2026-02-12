@@ -43,7 +43,7 @@ export const loadQuestionsFromCSV = async () => {
       text: row.Question_Text,
       options,
       correctAnswer,
-      // CSV has a single 'Placeholder / Description' column in the provided file
+      
       placeholder: row.Placeholder || row['Placeholder / Description'] || "",
       description: row.Description || row['Placeholder / Description'] || ""
     };

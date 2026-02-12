@@ -54,7 +54,6 @@ function App() {
           setAnswers(history.answers); // Restore answers for result screen
       } else if (history && history.answers) {
           // If in progress, find first unanswered question? Or just resume last saved step?
-          // For simplicity and robustness, let's resume based on answer count.
           const answeredCount = Object.keys(history.answers).length;
           setCurrentStep(answeredCount + 1);
           setAnswers(history.answers);
