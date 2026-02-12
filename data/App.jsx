@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import questions from './questions';
+import { loadQuestionsFromCSV } from './questions';
 import WelcomeScreen from './components/WelcomeScreen';
 import QuestionScreen from './components/QuestionScreen';
 import ResultScreen from './components/ResultScreen';
@@ -9,6 +9,9 @@ function App() {
   const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1-5: Questions, 6: Results
   const [answers, setAnswers] = useState({});
   const [history, setHistory] = useState(null); // Loaded from localStorage
+  const [questions, setQuestions] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
     const savedData = localStorage.getItem('quizAppUser');
@@ -17,6 +20,25 @@ function App() {
       setUsername(parsed.username);
       setHistory(parsed);
     }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    loadQuestionsFromCSV()
+      .then((rows) => {
+        if (!mounted) return;
+        setQuestions(rows);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setLoadError(err.message || String(err));
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setLoading(false);
+      });
+
+    return () => { mounted = false; };
   }, []);
 
   const handleStart = (name) => {
@@ -49,7 +71,7 @@ function App() {
     // Save progress
     const userData = {
         username,
-        completed: nextStep > questions.length,
+        completed: questions ? nextStep > questions.length : false,
         answers: newAnswers
     };
     localStorage.setItem('quizAppUser', JSON.stringify(userData));
@@ -65,6 +87,14 @@ function App() {
       setHistory(null);
   }
 
+  if (loading) {
+    return <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>Loading questions…</div>;
+  }
+
+  if (loadError) {
+    return <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem', color: 'red' }}>Failed to load questions: {loadError}</div>;
+  }
+
   return (
     <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
       {currentStep === 0 && (
@@ -74,7 +104,7 @@ function App() {
             onResume={handleResume}
         />
       )}
-      {currentStep > 0 && currentStep <= questions.length && (
+      {questions && currentStep > 0 && currentStep <= questions.length && (
         <QuestionScreen 
             question={questions[currentStep - 1]} 
             onAnswer={handleAnswer} 
@@ -82,7 +112,7 @@ function App() {
             totalSteps={questions.length}
         />
       )}
-      {currentStep > questions.length && (
+      {questions && currentStep > questions.length && (
         <ResultScreen 
             username={username}
             answers={answers} 

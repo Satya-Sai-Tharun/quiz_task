@@ -1,55 +1,46 @@
-const questions = [
-    {
-        id: 1,
-        type: 'radio',
-        text: 'What is the capital of France?',
-        options: [
-            { id: 'a', text: 'London' },
-            { id: 'b', text: 'Berlin' },
-            { id: 'c', text: 'Paris' },
-            { id: 'd', text: 'Madrid' }
-        ],
-        correctAnswer: 'c'
-    },
-    {
-        id: 2,
-        type: 'checkbox',
-        text: 'Which are programming languages?',
-        options: [
-            { id: 'a', text: 'Python' },        // Correct
-            { id: 'b', text: 'HTML' },
-            { id: 'c', text: 'CSS' },
-            { id: 'd', text: 'JavaScript' },    // Correct
-            { id: 'e', text: 'XML' }
-        ],
-        correctAnswer: ['a', 'd']
-    },
-    {
-        id: 3,
-        type: 'toggle',
-        text: 'Is the sky blue?',
-        options: [
-            { id: 'yes', text: 'Yes' },
-            { id: 'no', text: 'No' }
-        ],
-        correctAnswer: 'yes'
-    },
-    {
-        id: 4,
-        type: 'text',
-        text: 'What is 2 + 2?',
-        options: [], // Free text doesn't have fixed options usually, but we could simplify validation.
-        correctAnswer: '4',
-        placeholder: 'Enter a number...'
-    },
-    {
-        id: 5,
-        type: 'color',
-        text: 'Pick the color closest to pure Red (#FF0000).',
-        options: [], 
-        correctAnswer: '#ff0000', // We might do a "close enough" check or exact match
-        description: 'Use the color picker.'
-    }
-];
+import csv from "jquery-csv";
 
-export default questions;
+/**
+ * Loads questions from CSV and converts them
+ * to the same structure your app already uses.
+ */
+export const loadQuestionsFromCSV = async () => {
+  const response = await fetch("/questions.csv");
+  const csvText = await response.text();
+
+  const rows = csv.toObjects ? csv.toObjects(csvText) : (csv.csvToObjects ? csv.csvToObjects(csvText) : []);
+
+  return rows.map((row) => {
+    const options = [];
+
+    if (row.Option_A) options.push({ id: "a", text: row.Option_A });
+    if (row.Option_B) options.push({ id: "b", text: row.Option_B });
+    if (row.Option_C) options.push({ id: "c", text: row.Option_C });
+    if (row.Option_D) options.push({ id: "d", text: row.Option_D });
+    if (row.Option_E) options.push({ id: "e", text: row.Option_E });
+
+    let correctAnswer = row.Correct_Answer_1;
+
+    // Checkbox → array of answers
+    if (row.Question_Type === "checkbox") {
+      correctAnswer = [row.Correct_Answer_1, row.Correct_Answer_2].filter(Boolean)
+        .map((a) => a.toLowerCase());
+    } else if (row.Question_Type === 'radio' || row.Question_Type === 'toggle') {
+      // Normalize single-choice identifiers (CSV uses uppercase letters/words)
+      correctAnswer = row.Correct_Answer_1 ? row.Correct_Answer_1.toString().toLowerCase() : row.Correct_Answer_1;
+    } else if (row.Question_Type === 'color') {
+      correctAnswer = row.Correct_Answer_1 ? row.Correct_Answer_1.toString().toLowerCase() : row.Correct_Answer_1;
+    }
+
+    return {
+      id: Number(row.Q_No),
+      type: row.Question_Type,
+      text: row.Question_Text,
+      options,
+      correctAnswer,
+      // CSV has a single 'Placeholder / Description' column in the provided file
+      placeholder: row.Placeholder || row['Placeholder / Description'] || "",
+      description: row.Description || row['Placeholder / Description'] || ""
+    };
+  });
+};

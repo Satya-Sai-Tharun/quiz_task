@@ -1,0 +1,6 @@
+Q_No,Question_Text,Question_Type,Correct_Answer_1,Correct_Answer_2,Option_A,Option_B,Option_C,Option_D,Option_E,Placeholder / Description
+1,What is the capital of France?,radio,C,,London,Berlin,Paris,Madrid,,
+2,Which are programming languages?,checkbox,A,D,Python,HTML,CSS,JavaScript,XML,
+3,Is the sky blue?,toggle,YES,,Yes,No,,,,
+4,What is 2 + 2?,text,4,,,,,,,Enter a number...
+5,Pick the color closest to pure Red (#FF0000).,color,#ff0000,,,,,,,Use the color picker
