@@ -33,6 +33,31 @@ const WelcomeScreen = ({ onStart, history, onResume, onFileSelect, hasQuestions 
                                 <small>Questions missing. Please import to resume.</small>
                             </p>
                         )}
+                        
+                        {!hasQuestions && (
+                            <>
+                                <div className="separator">
+                                    <span>--- OR ---</span>
+                                </div>
+
+                                <div className="import-section">
+                                     <input 
+                                        type="file" 
+                                        accept=".csv" 
+                                        onChange={(e) => {
+                                            if (e.target.files && e.target.files[0]) {
+                                                onFileSelect(e.target.files[0]);
+                                            }
+                                        }} 
+                                        style={{ display: 'none' }}
+                                        id="csv-upload"
+                                    />
+                                    <label htmlFor="csv-upload" className="button secondary">
+                                        Import Questions (CSV)
+                                    </label>
+                                </div>
+                            </>
+                        )}
                         <div className="space"></div>
                         <p>
                             <small>Not {history.username}? <a href="#" onClick={() => localStorage.removeItem('quizAppUser') || window.location.reload()}>Restart</a></small>
@@ -58,18 +83,20 @@ const WelcomeScreen = ({ onStart, history, onResume, onFileSelect, hasQuestions 
 
                 <div className="space"></div>
                 
-                <div className="center-align">
-                    <p><small>--- OR ---</small></p>
-                    <label className="button flat">
-                        Import Questions (CSV)
-                        <input type="file" accept=".csv" onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                onFileSelect(e.target.files[0]);
-                            }
-                        }} style={{ display: 'none' }} />
-                    </label>
-                    {!hasQuestions && <p className="error-text"><small>Please import questions to start.</small></p>}
-                </div>
+                {!hasQuestions && !history && (
+                    <div className="center-align">
+                        <p><small>--- OR ---</small></p>
+                        <label className="button flat">
+                            Import Questions (CSV)
+                            <input type="file" accept=".csv" onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    onFileSelect(e.target.files[0]);
+                                }
+                            }} style={{ display: 'none' }} />
+                        </label>
+                        {!hasQuestions && <p className="error-text"><small>Please import questions to start.</small></p>}
+                    </div>
+                )}
             </div>
         </article>
     );
