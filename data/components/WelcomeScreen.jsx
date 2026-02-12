@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const WelcomeScreen = ({ onStart, history, onResume }) => {
+const WelcomeScreen = ({ onStart, history, onResume, onFileSelect, hasQuestions }) => {
     const [name, setName] = useState(history?.username || '');
 
     const handleSubmit = (e) => {
@@ -45,11 +45,26 @@ const WelcomeScreen = ({ onStart, history, onResume }) => {
                             <label>Username</label>
                         </div>
                         <div className="space"></div>
-                        <button type="submit" className="responsive">
+                        <button type="submit" className="responsive" disabled={!hasQuestions}>
                             Start
                         </button>
                     </form>
                 )}
+
+                <div className="space"></div>
+                
+                <div className="center-align">
+                    <p><small>--- OR ---</small></p>
+                    <label className="button flat">
+                        Import Questions (CSV)
+                        <input type="file" accept=".csv" onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                onFileSelect(e.target.files[0]);
+                            }
+                        }} style={{ display: 'none' }} />
+                    </label>
+                    {!hasQuestions && <p className="error-text"><small>Please import questions to start.</small></p>}
+                </div>
             </div>
         </article>
     );

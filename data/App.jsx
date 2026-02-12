@@ -24,22 +24,73 @@ function App() {
 
   useEffect(() => {
     let mounted = true;
+    
+    // First, try to load from localStorage to support reload/resume in offline mode
+    const savedQuestions = localStorage.getItem('quizAppQuestions');
+    if (savedQuestions) {
+        try {
+            const parsedQuestions = JSON.parse(savedQuestions);
+            if (parsedQuestions && parsedQuestions.length > 0) {
+                setQuestions(parsedQuestions);
+                setLoading(false);
+                return; // questions loaded from storage, skip fetch
+            }
+        } catch (e) {
+            console.error("Failed to parse saved questions", e);
+            localStorage.removeItem('quizAppQuestions');
+        }
+    }
+
+    // specific fall-back if not found in storage
     loadQuestionsFromCSV()
       .then((rows) => {
         if (!mounted) return;
-        setQuestions(rows);
+        if (rows && rows.length > 0) {
+            setQuestions(rows);
+            // Save to localStorage so they persist on reload
+            localStorage.setItem('quizAppQuestions', JSON.stringify(rows));
+            setLoading(false);
+        } else {
+            // If no default questions (e.g. file:// protocol block), stop loading so user can upload
+            setLoading(false); 
+        }
       })
       .catch((err) => {
         if (!mounted) return;
-        setLoadError(err.message || String(err));
-      })
-      .finally(() => {
-        if (!mounted) return;
+        console.warn("Auto-load failed, waiting for user input.", err);
         setLoading(false);
       });
 
     return () => { mounted = false; };
   }, []);
+
+  const handleFileSelect = (file) => {
+      setLoading(true);
+      setLoadError(null);
+      
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+          const text = e.target.result;
+          try {
+              const rows = await loadQuestionsFromCSV(text);
+              if (rows && rows.length > 0) {
+                  setQuestions(rows);
+                  localStorage.setItem('quizAppQuestions', JSON.stringify(rows));
+              } else {
+                  setLoadError("No questions found in file.");
+              }
+          } catch (err) {
+              setLoadError("Failed to parse CSV: " + err.message);
+          } finally {
+              setLoading(false);
+          }
+      };
+      reader.onerror = () => {
+          setLoadError("Failed to read file.");
+          setLoading(false);
+      }
+      reader.readAsText(file);
+  };
 
   const handleStart = (name) => {
     setUsername(name);
@@ -81,6 +132,7 @@ function App() {
 
   const handleRestart = () => {
       localStorage.removeItem('quizAppUser');
+      localStorage.removeItem('quizAppQuestions');
       setUsername('');
       setAnswers({});
       setCurrentStep(0);
@@ -104,6 +156,8 @@ function App() {
             onStart={handleStart} 
             history={history} 
             onResume={handleResume}
+            onFileSelect={handleFileSelect}
+            hasQuestions={!!questions && questions.length > 0}
         />
       )}
       {questions && currentStep > 0 && currentStep <= questions.length && (

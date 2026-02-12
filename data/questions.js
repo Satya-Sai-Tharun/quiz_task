@@ -4,9 +4,22 @@ import csv from "jquery-csv";
  * Loads questions from CSV and converts them
  * to the same structure your app already uses.
  */
-export const loadQuestionsFromCSV = async () => {
-  const response = await fetch("/questions.csv");
-  const csvText = await response.text();
+export const loadQuestionsFromCSV = async (csvContent) => {
+  let csvText = csvContent;
+  
+  if (!csvText) {
+    try {
+      const response = await fetch("./questions.csv");
+      if (!response.ok) {
+        throw new Error("Failed to fetch default questions.csv");
+      }
+      csvText = await response.text();
+    } catch (error) {
+      console.warn("Could not load default questions:", error);
+      // If we can't load the default, we return empty so the UI can prompt for a file
+      return [];
+    }
+  }
 
   const rows = csv.toObjects ? csv.toObjects(csvText) : (csv.csvToObjects ? csv.csvToObjects(csvText) : []);
 
